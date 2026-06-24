@@ -197,7 +197,7 @@ bash "$SKILL_DIR/scripts/generate_image.sh" \
 | `OSS_ACCESS_KEY_SECRET` | 是 | RAM AccessKey Secret |
 | `OSS_BUCKET` | 是 | Bucket 名 |
 | `OSS_ENDPOINT` | 是 | 地域域名，如 `oss-cn-hangzhou.aliyuncs.com` |
-| `OSS_DOMAIN` | 否 | 绑定的自定义域名 / CDN（含 https://）；不填用 Bucket 默认域名 |
+| `OSS_DOMAIN` | 否 | 自定义域名/CDN（**不带** https://，脚本自动补）；不填用 Bucket 默认域名（自带 HTTPS，推荐） |
 | `OSS_PREFIX` | 否 | 对象前缀，如 `elibot/articles` |
 | `ELIBOT_IMAGE_HOST` | 否 | 设为 `oss` 则 `generate_image.sh` 默认走 OSS |
 
@@ -205,7 +205,7 @@ bash "$SKILL_DIR/scripts/generate_image.sh" \
 
 1. **创建 Bucket**：OSS 控制台 → Bucket 列表 → 创建 → 选地域（如华东 1 杭州）→ 读写权限选「**公共读**」（图片要能公开访问）→ 记下 Bucket 名和 Endpoint（外网访问域名）。
 2. **创建 RAM 子账号 + AccessKey**（强烈建议，**勿用主账号 AK**）：RAM 访问控制 → 用户 → 创建用户 → 勾选「OpenAPI 调用访问」→ 生成 AccessKey → 新建自定义授权策略，仅授予该 Bucket 的 `oss:PutObject` + `oss:GetObject` 权限，授权给该子账号。
-3. **（可选）绑定自定义域名**：Bucket → 传输管理 → 域名管理 → 绑定自有域名或开通 CDN（加速 + 隐藏 bucket 名）。
+3. **（可选）绑定自定义域名**：Bucket → 传输管理 → 域名管理 → 绑定自有域名或开通 CDN（加速 + 隐藏 bucket 名）。⚠️ 自定义域名**必须配 SSL 证书**（否则 HTTPS 打不开、官网图会裂）；没配 SSL 就留空 `OSS_DOMAIN`，用 Bucket 默认域名（自带 HTTPS，推荐）。
 
 ### 4. 配置环境变量
 
@@ -216,7 +216,7 @@ export OSS_ACCESS_KEY_ID="你的AccessKeyId"
 export OSS_ACCESS_KEY_SECRET="你的AccessKeySecret"
 export OSS_BUCKET="你的bucket名"
 export OSS_ENDPOINT="oss-cn-hangzhou.aliyuncs.com"
-export OSS_DOMAIN="https://img.yourdomain.com"  # 可选，没绑域名删掉这行
+export OSS_DOMAIN="img.yourdomain.com"  # 可选，不带 https://；没配 SSL 证书就留空，用 bucket 默认域名
 export OSS_PREFIX="elibot/articles"             # 可选
 export ELIBOT_IMAGE_HOST="oss"                   # 可选，设了默认走 OSS
 ```
