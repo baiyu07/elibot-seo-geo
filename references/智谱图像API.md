@@ -22,7 +22,7 @@
 {
   "model": "glm-image",
   "prompt": "图片的英文描述 prompt",
-  "size": "1536x864"
+  "size": "1024x768"
 }
 ```
 
@@ -30,7 +30,7 @@
 |---|---|---|
 | `model` | 是 | 固定 `glm-image` |
 | `prompt` | 是 | 图片描述，建议英文（见配图指南） |
-| `size` | 否 | 默认 `1024x1024`；封面用 `1536x864`，正文用 `1024x1024` |
+| `size` | 否 | 默认 `1024x1024`；封面用 `1024x768`（4:3），正文用 `1024x1024`（1:1） |
 | `response_format` | 否 | `url`（默认，返回链接）或 `b64_json`（返回 base64） |
 
 ---
@@ -42,16 +42,15 @@
 - **硬约束**：长宽均为 **32 的整数倍**
 - **硬范围**：单边 **512–2048 px**
 - **总像素** ≤ **2²²（约 419 万）**
-- 推荐单边落在 **1024–2048**（软建议，非硬下限；512–1024 的短边也合法，如 `1536x864` 的 864）
+- 推荐单边落在 **1024–2048**（软建议，非硬下限；512–1024 的短边也合法，如 `1024x768` 的 768）
 - 支持任意比例（正方形 / 横版 / 竖版）
 
 艾利特配图标准尺寸：
 
 | 用途 | size | 说明 |
 |---|---|---|
-| 封面图 | `1536x864` | 16:9 横版，适合文章头图 |
+| 封面图 | `1024x768` | **4:3** 横版，适合文章头图 |
 | 正文配图 | `1024x1024` | 1:1 正方形，默认最稳 |
-| 竖版封面（移动端，可选） | `864x1536` | 适合移动端头图 |
 
 > 非法 size 会返回 400。脚本不会校验 size，调用者须自行保证长宽为 32 的整数倍、落在 1024–2048 内。
 
@@ -113,7 +112,7 @@ RESPONSE=$(curl -s -X POST "https://open.bigmodel.cn/api/paas/v4/images/generati
   -d '{
     "model": "glm-image",
     "prompt": "a collaborative robot arm working on an assembly line, industrial sci-fi illustration, blue-grey and steel color palette, cinematic lighting, clean modern factory environment, high detail, no text, no watermark, no letters, no logo",
-    "size": "1536x864"
+    "size": "1024x768"
   }')
 
 # 提取 URL（需 jq；若无 jq 可用 python3）
@@ -141,7 +140,7 @@ SKILL_DIR="$HOME/.openclaw/skills/elibot-seo-geo"   # 按实际安装路径改
 # 生成封面（标准输出最后一行即 URL）
 bash "$SKILL_DIR/scripts/generate_image.sh" \
   --prompt "a palletizing robot stacking boxes..." \
-  --size 1536x864
+  --size 1024x768
 
 # 推荐加 --download 同步下载到文章同级 images/，规避智谱 CDN 约 24h 失效
 bash "$SKILL_DIR/scripts/generate_image.sh" \
@@ -227,10 +226,10 @@ export ELIBOT_IMAGE_HOST="oss"                   # 可选，设了默认走 OSS
 
 ```bash
 # 方式A：单次指定 --host oss
-bash "$SKILL_DIR/scripts/generate_image.sh" --prompt "..." --size 1536x864 --host oss --download images/01-cover.png
+bash "$SKILL_DIR/scripts/generate_image.sh" --prompt "..." --size 1024x768 --host oss --download images/01-cover.png
 
 # 方式B：设了 ELIBOT_IMAGE_HOST=oss 后，默认就走 OSS（不用每次写 --host oss）
-bash "$SKILL_DIR/scripts/generate_image.sh" --prompt "..." --size 1536x864 --download images/01-cover.png
+bash "$SKILL_DIR/scripts/generate_image.sh" --prompt "..." --size 1024x768 --download images/01-cover.png
 ```
 
 输出最后一行是 OSS 永久 URL。
